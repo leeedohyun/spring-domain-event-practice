@@ -62,6 +62,12 @@ public class Order extends AbstractAggregateRoot<Order> {
         ordered();
     }
 
+    public void payed() {
+        this.status = OrderStatus.PAYED;
+
+        registerEvent(new OrderPayedEvent(this));
+    }
+
     private void ordered() {
         this.status = OrderStatus.ORDERED;
     }

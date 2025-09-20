@@ -5,6 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.example.domain_event_practice.domain.generic.Money;
+import com.example.domain_event_practice.domain.order.Order.OrderStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,5 +19,15 @@ class OrderTest {
         order.place();
 
         assertThat(order.getStatus()).isEqualTo(Order.OrderStatus.ORDERED);
+    }
+
+    @Test
+    void payed() {
+        OrderLineItem orderLineItem = new OrderLineItem(1L, "상품1", Money.wons(10000L), 2);
+        Order order = new Order(1L, "주문", List.of(orderLineItem));
+
+        order.payed();
+
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.PAYED);
     }
 }

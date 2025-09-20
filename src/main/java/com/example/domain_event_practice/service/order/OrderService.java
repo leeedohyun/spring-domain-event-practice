@@ -16,9 +16,18 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
     @Transactional
-    public void placeOrder(Cart cart) {
+    public Order placeOrder(Cart cart) {
         Order order = orderMapper.mapFrom(cart);
         order.place();
+
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public void payOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다. id=" + orderId));
+        order.payed();
         orderRepository.save(order);
     }
 }

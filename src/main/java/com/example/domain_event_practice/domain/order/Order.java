@@ -13,13 +13,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "ORDERS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+@Getter
+public class Order extends AbstractAggregateRoot<Order> {
 
     public enum OrderStatus { ORDERED, PAYED, DELIVERED }
 
@@ -39,4 +45,24 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="ORDER_ID")
     private List<OrderLineItem> orderLineItems = new ArrayList<>();
+
+    public Order(Long userId, String name, List<OrderLineItem> items) {
+        this(userId, name, null, LocalDateTime.now(), items);
+    }
+
+    public Order(Long userId, String name, OrderStatus status, LocalDateTime orderedTime, List<OrderLineItem> orderLineItems) {
+        this.userId = userId;
+        this.name = name;
+        this.status = status;
+        this.orderedTime = orderedTime;
+        this.orderLineItems.addAll(orderLineItems);
+    }
+
+    public void place() {
+        ordered();
+    }
+
+    private void ordered() {
+        this.status = OrderStatus.ORDERED;
+    }
 }

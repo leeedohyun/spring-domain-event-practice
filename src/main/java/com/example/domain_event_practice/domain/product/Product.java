@@ -1,5 +1,7 @@
 package com.example.domain_event_practice.domain.product;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,10 +11,14 @@ import jakarta.persistence.Id;
 import com.example.domain_event_practice.domain.generic.Money;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@ToString
 public class Product {
 
     @Id
@@ -22,7 +28,22 @@ public class Product {
     private String name;
 
     @Embedded
+    @AttributeOverride(name = "amount", column = @Column(name = "price"))
     private Money price;
 
-    private Long stock;
+    private int stock;
+
+    public Product(String name, Money price, int stock) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    public void deductStock(int quantity) {
+        if (this.stock < quantity) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+
+        this.stock -= quantity;
+    }
 }

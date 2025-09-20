@@ -1,7 +1,6 @@
 package com.example.domain_event_practice.domain.generic;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 import jakarta.persistence.Embeddable;
 
@@ -24,7 +23,7 @@ public class Money {
         this.amount = amount;
     }
 
-    public static Money wons(BigDecimal amount) {
-        return new Money(amount);
+    public static Money wons(Long amount) {
+        return new Money(BigDecimal.valueOf(amount));
     }
 }

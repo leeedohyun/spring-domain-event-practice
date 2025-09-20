@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.example.domain_event_practice.domain.generic.Money;
+import com.example.domain_event_practice.domain.order.Order;
 import com.example.domain_event_practice.service.order.Cart;
 import com.example.domain_event_practice.service.order.Cart.CartLineItem;
 import com.example.domain_event_practice.service.order.OrderService;
@@ -34,6 +35,8 @@ public class DomainEventPracticeApplication implements CommandLineRunner {
 				new CartLineItem(1L, "스프링 부트 마스터", Money.wons(35000L), 1),
 				new CartLineItem(2L, "JPA 프로그래밍 입문", Money.wons(42000L), 2));
 
-		orderService.placeOrder(cart);
+		Order order = orderService.placeOrder(cart);
+
+		orderService.payOrder(order.getId());
 	}
 }

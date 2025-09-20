@@ -13,12 +13,10 @@ import com.example.domain_event_practice.domain.generic.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@ToString
 public class Product {
 
     @Id
@@ -34,6 +32,11 @@ public class Product {
     private int stock;
 
     public Product(String name, Money price, int stock) {
+        this(null, name, price, stock);
+    }
+
+    public Product(Long id, String name, Money price, int stock) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.stock = stock;

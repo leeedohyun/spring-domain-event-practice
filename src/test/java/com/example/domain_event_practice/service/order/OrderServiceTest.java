@@ -1,5 +1,7 @@
 package com.example.domain_event_practice.service.order;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +19,7 @@ import com.example.domain_event_practice.domain.product.Product;
 import com.example.domain_event_practice.domain.product.ProductRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -34,7 +37,6 @@ class OrderServiceTest {
 
     @Test
     void place() {
-        // given
         Long productId = 3L;
         Cart.CartLineItem cartLineItem = new Cart.CartLineItem(
                 productId,
@@ -45,12 +47,34 @@ class OrderServiceTest {
 
         Cart cart = new Cart(1L, cartLineItem);
 
-        // when
-        orderService.placeOrder(cart);
+        Order order = orderService.placeOrder(cart);
 
-        // then
-        Order order = orderRepository.findById(1L).orElseThrow();
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.ORDERED);
+        Order findOrder = orderRepository.findById(order.getId()).orElseThrow();
+        assertThat(findOrder.getStatus()).isEqualTo(OrderStatus.ORDERED);
+    }
+
+    @Test
+    void validateFailEmptyProducts() {
+        Cart cart = new Cart(1L, Collections.emptyList());
+
+        assertThatThrownBy(() -> orderService.placeOrder(cart))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void validateFailInsufficientStock() {
+        Long productId = 3L;
+        Cart.CartLineItem cartLineItem = new Cart.CartLineItem(
+                productId,
+                "스프링 부트 마스터",
+                Money.wons(35000L),
+                81
+        );
+
+        Cart cart = new Cart(1L, cartLineItem);
+
+        assertThatThrownBy(() -> orderService.placeOrder(cart))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

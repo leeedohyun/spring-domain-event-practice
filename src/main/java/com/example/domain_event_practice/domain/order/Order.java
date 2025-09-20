@@ -58,7 +58,9 @@ public class Order extends AbstractAggregateRoot<Order> {
         this.orderLineItems.addAll(orderLineItems);
     }
 
-    public void place() {
+    public void place(OrderValidator orderValidator) {
+        orderValidator.validate(this);
+
         ordered();
     }
 
@@ -66,6 +68,12 @@ public class Order extends AbstractAggregateRoot<Order> {
         this.status = OrderStatus.PAYED;
 
         registerEvent(new OrderPayedEvent(this));
+    }
+
+    public List<Long> getProductIds() {
+        return orderLineItems.stream()
+                .map(OrderLineItem::getProductId)
+                .toList();
     }
 
     private void ordered() {
